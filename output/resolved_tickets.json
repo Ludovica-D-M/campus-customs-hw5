@@ -1,0 +1,461 @@
+{
+  "generated_from": [
+    "output/audit_trail.json",
+    "data/campus_customs_new.db"
+  ],
+  "shop_date": "2026-08-31",
+  "starting_checking_balance": 3400.0,
+  "ending_checking_balance": 1000.0,
+  "net_cash_change": -2400.0,
+  "runs_in_this_session": [
+    "run-688afd3c",
+    "run-7148ae7f",
+    "run-7b6eb6ea",
+    "run-4ad8798b",
+    "run-e0373480"
+  ],
+  "total_tokens": 255707,
+  "tickets": [
+    {
+      "id": 101,
+      "type": "customer_order",
+      "requester": "Tauhid Zaman",
+      "subject": "Bulldog tee",
+      "final_status": "blocked",
+      "final_outcome": "blocked",
+      "final_summary": "Ticket remains blocked: size S is unavailable, and the linked reprint has no confirmed quantity, receipt, or ETA. Customer Service saved a reply draft; it was not sent.",
+      "final_reasoning": "The request is for 1 \u00d7 CC-TEE-WHITE size S, with 0 on hand. Invoice 501 for Bulldog Print Co is open and overdue for $840.00 (due 2026-08-28) and lists a 5-day lead time from the shop date 2026-08-31. Although that implies a nominal 2026-09-05 lead-time estimate, no quantity or receipt is confirmed, so it is not a reliable fulfillment promise. No stock was adjusted. The blocker clears when reprint quantity/receipt is confirmed or another fulfillment option is authorized.",
+      "runs": [
+        "run-688afd3c",
+        "run-4ad8798b"
+      ],
+      "agent_contributions": {
+        "accounting": {
+          "tool_calls": 4,
+          "tools_used": [
+            "get_cash_balance",
+            "list_unpaid_invoices",
+            "get_ticket",
+            "get_shop_date"
+          ],
+          "delegations_made": 0,
+          "reports": 1,
+          "last_report": "The checking balance is $3,400. After the $840 open invoice and $2,400 next-rent commitment, $3,240 is committed and only $160 is uncommitted; the shop cannot pay the $840 invoice while preserving those commitments. The invoice is for the rush reprint, but affordability alone does not fulfill the ticket\u2019s one-unit order: inventory is currently zero."
+        },
+        "boss": {
+          "tool_calls": 7,
+          "tools_used": [
+            "get_ticket",
+            "get_shop_date",
+            "update_ticket_status",
+            "list_open_tickets"
+          ],
+          "delegations_made": 4,
+          "reports": 2,
+          "last_report": "Ticket remains blocked: size S is unavailable, and the linked reprint has no confirmed quantity, receipt, or ETA. Customer Service saved a reply draft; it was not sent."
+        },
+        "customer_service": {
+          "tool_calls": 8,
+          "tools_used": [
+            "get_ticket",
+            "get_shop_date",
+            "check_item_availability",
+            "draft_customer_message"
+          ],
+          "delegations_made": 0,
+          "reports": 2,
+          "last_report": "Drafted a reply to Tauhid Zaman for ticket 101 explaining that size S is out of stock and fulfillment/date cannot be promised without confirmation. The message is saved for human review and was not sent."
+        },
+        "inventory": {
+          "tool_calls": 7,
+          "tools_used": [
+            "get_ticket",
+            "check_item_availability",
+            "get_shop_date",
+            "list_vendors"
+          ],
+          "delegations_made": 1,
+          "reports": 2,
+          "last_report": "Ticket 101 cannot be fulfilled from verified shelf stock: CC-TEE-WHITE size S has 0 on hand against 1 requested, a shortfall of 1. Invoice 501 is an open, overdue Bulldog Print Co apparel reprint with a 5-day vendor lead time, but the records provide no confirmed quantity or receipt/current fulfillment confirmation; no delivery or fulfillment date can be promised."
+        }
+      },
+      "delegations": [
+        {
+          "run_id": "run-688afd3c",
+          "from": "boss",
+          "detail": "boss -> inventory (delegation)",
+          "chain": [
+            "boss"
+          ]
+        },
+        {
+          "run_id": "run-688afd3c",
+          "from": "inventory",
+          "detail": "inventory -> accounting (peer)",
+          "chain": [
+            "boss",
+            "inventory"
+          ]
+        },
+        {
+          "run_id": "run-688afd3c",
+          "from": "boss",
+          "detail": "boss -> customer_service (delegation)",
+          "chain": [
+            "boss"
+          ]
+        },
+        {
+          "run_id": "run-4ad8798b",
+          "from": "boss",
+          "detail": "boss -> inventory (delegation)",
+          "chain": [
+            "boss"
+          ]
+        },
+        {
+          "run_id": "run-4ad8798b",
+          "from": "boss",
+          "detail": "boss -> customer_service (delegation)",
+          "chain": [
+            "boss"
+          ]
+        }
+      ],
+      "human_approvals": [],
+      "payments_made": [],
+      "drafts_not_sent": [
+        {
+          "id": 1,
+          "audience": "customer",
+          "recipient": "Tauhid Zaman",
+          "subject": "Your Bulldog tee order",
+          "sent": 0
+        },
+        {
+          "id": 3,
+          "audience": "customer",
+          "recipient": "Tauhid Zaman",
+          "subject": "Update on your Bulldog tee request",
+          "sent": 0
+        }
+      ],
+      "outcome_history": [
+        {
+          "run_id": "run-688afd3c",
+          "outcome": "blocked",
+          "summary": "Ticket 101 is blocked: the requested size S tee cannot be filled from stock, and the open reprint cannot yet be verified as covering the order. A reply draft was saved for human review, not sent; the ticket is marked blocked pending reprint confirmation or another fulfillment option.",
+          "reasoning": "Shop date is 2026-08-31. Size S inventory is 0 against the request for 1. Invoice 501 to Bulldog Print Co is open and overdue (due 2026-08-28) and describes a rush reprint with a 5-day lead time, giving an estimated date of 2026-09-05, but it records neither the reprint quantity nor receipt. Accounting information reported by Inventory shows $3,400 checking, $840 in open invoices and $2,400 committed to next rent, leaving $160 uncommitted; the $840 invoice is $680 above that uncommitted amount, so no payment was proposed. Customer Service saved draft 1 asking whether Tauhid wants to wait for confirmation or discuss alternatives. The ticket can be unblocked once reprint quantity/receipt is confirmed or another fulfillment option is authorized.",
+          "delegated_to": [
+            "inventory",
+            "accounting",
+            "customer_service"
+          ],
+          "actions_taken": [
+            "update_ticket_status({'ticket_id': 101, 'status': 'blocked', 'resolution_note': 'Blocked: the order is for 1 \u00d7 CC-TEE-WHITE size S, but on-hand stock is 0. Invoice 501 is overdue/open and describes a Bulldog Print Co rush reprint with a 5-day lead time from shop date 2026-08-31 (estimated 2026-09-05), but it gives no quantity and does not confirm receipt, so fulfillment cannot be verified or promised. No stock was adjusted. Customer Service saved draft 1 asking Tauhid whether to wait for confirmation or discuss alternatives; it was not sent. Unblock when the reprint quantity/receipt is confirmed or another fulfillment option is authorized.', 'updated_by': 'boss'}) -> ok"
+          ],
+          "drafts_not_sent": [
+            "draft 1 to Tauhid Zaman (customer, not sent)"
+          ]
+        },
+        {
+          "run_id": "run-4ad8798b",
+          "outcome": "blocked",
+          "summary": "Ticket remains blocked: size S is unavailable, and the linked reprint has no confirmed quantity, receipt, or ETA. Customer Service saved a reply draft; it was not sent.",
+          "reasoning": "The request is for 1 \u00d7 CC-TEE-WHITE size S, with 0 on hand. Invoice 501 for Bulldog Print Co is open and overdue for $840.00 (due 2026-08-28) and lists a 5-day lead time from the shop date 2026-08-31. Although that implies a nominal 2026-09-05 lead-time estimate, no quantity or receipt is confirmed, so it is not a reliable fulfillment promise. No stock was adjusted. The blocker clears when reprint quantity/receipt is confirmed or another fulfillment option is authorized.",
+          "delegated_to": [
+            "inventory",
+            "customer_service"
+          ],
+          "actions_taken": [
+            "update_ticket_status({'ticket_id': 101, 'status': 'blocked', 'resolution_note': \"Confirmed on 2026-08-31 that CC-TEE-WHITE size S has 0 on hand against Tauhid Zaman's request for 1. Invoice 501 for the Bulldog Print Co rush reprint is open and overdue ($840.00, due 2026-08-28) and lists a 5-day lead time, but no reprint quantity, receipt, or current fulfillment confirmation is recorded; 2026-09-05 is only a nominal lead-time estimate, not a confirmed ETA. No stock was adjusted and fulfillment cannot be promised until quantity/receipt is confirmed or another option is authorized. Customer Service saved draft 3 asking whether Tauhid prefers to wait for confirmation or discuss alternatives; it was not sent.\", 'updated_by': 'boss'}) -> ok"
+          ],
+          "drafts_not_sent": [
+            "draft 3 to Tauhid Zaman (customer, not sent)"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 102,
+      "type": "rent_notice",
+      "requester": "Elm City Properties",
+      "subject": "Rent due",
+      "final_status": "resolved",
+      "final_outcome": "resolved",
+      "final_summary": "Resolved ticket 102. Lease 1 sets monthly rent at $2,400 with next due October 2, 2026\u2014not September 2 as the notice implies. A $2,400 payment from checking is recorded paid on August 31, 2026, and no amount remains due for that recorded obligation.",
+      "final_reasoning": "On the shop date, August 31, 2026, lease 1's next_due date of October 2 was 32 days away. Facilities confirmed the $2,400 payment was recorded paid August 31; Accounting confirmed approval 1 is paid and linked to payment 1. Accounting also noted the cash snapshot dated August 31 conflicts chronologically with later payment-record timestamps, so the completion decision rests on the recorded paid status, not the inconsistent snapshot.",
+      "runs": [
+        "run-7148ae7f",
+        "run-e0373480"
+      ],
+      "agent_contributions": {
+        "accounting": {
+          "tool_calls": 10,
+          "tools_used": [
+            "get_cash_balance",
+            "list_unpaid_invoices",
+            "get_shop_date",
+            "get_ticket",
+            "verify_rent_due",
+            "request_payment_approval",
+            "list_payment_approvals"
+          ],
+          "delegations_made": 0,
+          "reports": 2,
+          "last_report": "Approval 1 is marked paid and linked to payment 1 for the full $2,400 rent. Its approval decision and the ticket\u2019s post-approval note are timestamped 2026-10-10; the note says the payment left checking with $1,000 remaining. No further rent-payment work appears outstanding, though ticket 102 remains open for resolution. The available cash snapshot is dated 2026-08-31, earlier than those payment-record timestamps, so the snapshot and later payment note are chronologically inconsistent."
+        },
+        "boss": {
+          "tool_calls": 7,
+          "tools_used": [
+            "get_ticket",
+            "get_shop_date",
+            "get_cash_balance",
+            "update_ticket_status"
+          ],
+          "delegations_made": 4,
+          "reports": 2,
+          "last_report": "Resolved ticket 102. Lease 1 sets monthly rent at $2,400 with next due October 2, 2026\u2014not September 2 as the notice implies. A $2,400 payment from checking is recorded paid on August 31, 2026, and no amount remains due for that recorded obligation."
+        },
+        "facilities": {
+          "tool_calls": 6,
+          "tools_used": [
+            "get_ticket",
+            "get_shop_date",
+            "verify_rent_due"
+          ],
+          "delegations_made": 0,
+          "reports": 2,
+          "last_report": "Lease 1 for Elm City Properties lists monthly rent of $2,400 and next due date October 2, 2026. On the shop date of August 31, 2026, that date is 32 days away, so the notice\u2019s claim that rent is due in two days does not match the lease; records show the $2,400 rent payment was made August 31 and the obligation is satisfied."
+        }
+      },
+      "delegations": [
+        {
+          "run_id": "run-7148ae7f",
+          "from": "boss",
+          "detail": "boss -> facilities (delegation)",
+          "chain": [
+            "boss"
+          ]
+        },
+        {
+          "run_id": "run-7148ae7f",
+          "from": "boss",
+          "detail": "boss -> accounting (delegation)",
+          "chain": [
+            "boss"
+          ]
+        },
+        {
+          "run_id": "run-e0373480",
+          "from": "boss",
+          "detail": "boss -> facilities (delegation)",
+          "chain": [
+            "boss"
+          ]
+        },
+        {
+          "run_id": "run-e0373480",
+          "from": "boss",
+          "detail": "boss -> accounting (delegation)",
+          "chain": [
+            "boss"
+          ]
+        }
+      ],
+      "human_approvals": [
+        {
+          "approval_id": 1,
+          "kind": "rent",
+          "amount": 2400.0,
+          "account": "checking",
+          "requested_by_agent": "accounting",
+          "reason": "Lease verification confirms $2,400 rent for the Chapel Street shop is due 2026-09-02. Checking can cover rent while preserving the $840 open invoice commitment; $160 remains uncommitted after both obligations.",
+          "status": "paid",
+          "decided_by_human": "Ludovica Di Mizio (owner, authorized in session)",
+          "decided_at": "2026-10-10T20:05:19-04:00",
+          "payment_id": 1
+        }
+      ],
+      "payments_made": [
+        {
+          "id": 1,
+          "kind": "rent",
+          "amount": 2400.0,
+          "account": "checking",
+          "paid_at": "2026-08-31",
+          "approved_by": "Ludovica Di Mizio (owner, authorized in session)"
+        }
+      ],
+      "drafts_not_sent": [],
+      "outcome_history": [
+        {
+          "run_id": "run-7148ae7f",
+          "outcome": "awaiting_approval",
+          "summary": "Lease rent was verified and a $2,400 payment was staged for human approval; no money has moved. Ticket 102 is awaiting approval.",
+          "reasoning": "The shop date is 2026-08-31. Lease 1 confirms $2,400 rent due 2026-09-02, matching the notice's two-day timing. Checking has $3,400; $840 in unpaid invoices plus the $2,400 next rent are committed, leaving $160 uncommitted. Accounting confirms both commitments are covered and staged approval request 1. The notice did not state an amount, so its demand amount could not be compared independently with the lease.",
+          "delegated_to": [
+            "facilities",
+            "accounting"
+          ],
+          "actions_taken": [
+            "update_ticket_status({'ticket_id': 102, 'status': 'awaiting_approval', 'resolution_note': \"Lease 1 verified Elm City Properties rent of $2,400 is due 2026-09-02, matching the notice's two-day timing on shop date 2026-08-31. Accounting staged $2,400 from checking as pending approval request 1; no payment has been made. Cash is $3,400, with $840 unpaid invoices (invoice 501) and $2,400 rent committed, leaving $160 uncommitted. Awaiting human approval.\", 'updated_by': 'boss'}) -> ok"
+          ],
+          "drafts_not_sent": []
+        },
+        {
+          "run_id": "run-e0373480",
+          "outcome": "resolved",
+          "summary": "Resolved ticket 102. Lease 1 sets monthly rent at $2,400 with next due October 2, 2026\u2014not September 2 as the notice implies. A $2,400 payment from checking is recorded paid on August 31, 2026, and no amount remains due for that recorded obligation.",
+          "reasoning": "On the shop date, August 31, 2026, lease 1's next_due date of October 2 was 32 days away. Facilities confirmed the $2,400 payment was recorded paid August 31; Accounting confirmed approval 1 is paid and linked to payment 1. Accounting also noted the cash snapshot dated August 31 conflicts chronologically with later payment-record timestamps, so the completion decision rests on the recorded paid status, not the inconsistent snapshot.",
+          "delegated_to": [
+            "facilities",
+            "accounting"
+          ],
+          "actions_taken": [
+            "update_ticket_status({'ticket_id': 102, 'status': 'resolved', 'resolution_note': \"Verified on shop date 2026-08-31: lease 1 lists $2,400 monthly rent with next_due 2026-10-02, so the notice's claim of a 2026-09-02 due date conflicts with the lease. Facilities confirms the $2,400 rent payment was recorded paid from checking on 2026-08-31 and no amount remains due for that recorded obligation. Accounting confirms approval 1 is paid and linked to payment 1. Ticket resolved; note cash snapshot and later payment-record timestamps are chronologically inconsistent, so rely on the recorded payment status for completion.\", 'updated_by': 'boss'}) -> ok"
+          ],
+          "drafts_not_sent": []
+        }
+      ]
+    },
+    {
+      "id": 103,
+      "type": "price_override",
+      "requester": "Yale AI Club",
+      "subject": "Bulk hoodie discount",
+      "final_status": "resolved",
+      "final_outcome": "resolved",
+      "final_summary": "Decided on a 10% bulk discount offer: $52.20 per hoodie for 20. Customer Service saved an unsent draft asking Yale AI Club to confirm. The ticket is resolved as a discount inquiry; no units were reserved and no replenishment was ordered.",
+      "final_reasoning": "List price is $58 and unit cost is $22. The offer is $5.80 off per unit and leaves $30.20 gross margin per hoodie ($604 across 20 at the recorded unit cost). Inventory shows 8 size M hoodies on hand, 12 short. Bulldog Print Co has a listed 5-day lead time, which from the shop date 2026-08-31 points to 2026-09-05, but there is no recorded vendor quote or confirmed availability, so the draft does not promise the full quantity or date. Accounting reports $3,400 checking, $840 in unpaid invoices, and $2,400 next rent, leaving $160 uncommitted; no payment was requested.",
+      "runs": [
+        "run-7b6eb6ea"
+      ],
+      "agent_contributions": {
+        "accounting": {
+          "tool_calls": 9,
+          "tools_used": [
+            "get_ticket",
+            "quote_bulk_order",
+            "get_cash_balance",
+            "list_unpaid_invoices",
+            "get_shop_date"
+          ],
+          "delegations_made": 0,
+          "reports": 2,
+          "last_report": "Checking has $3,400; subtracting the $840 unpaid invoice and $2,400 next-rent commitment leaves $160 uncommitted. I could not establish a reprint cost for the 12-unit gap, so affordability of that reprint cannot be confirmed; invoice 501 is for a different item and is not evidence of this cost."
+        },
+        "boss": {
+          "tool_calls": 3,
+          "tools_used": [
+            "get_ticket",
+            "get_shop_date",
+            "update_ticket_status"
+          ],
+          "delegations_made": 4,
+          "reports": 1,
+          "last_report": "Decided on a 10% bulk discount offer: $52.20 per hoodie for 20. Customer Service saved an unsent draft asking Yale AI Club to confirm. The ticket is resolved as a discount inquiry; no units were reserved and no replenishment was ordered."
+        },
+        "customer_service": {
+          "tool_calls": 5,
+          "tools_used": [
+            "get_ticket",
+            "get_shop_date",
+            "check_item_availability",
+            "list_vendors",
+            "draft_customer_message"
+          ],
+          "delegations_made": 0,
+          "reports": 1,
+          "last_report": "Drafted a reply for ticket 103 to Yale AI Club; it is saved for human review and was not sent."
+        },
+        "inventory": {
+          "tool_calls": 9,
+          "tools_used": [
+            "get_ticket",
+            "check_item_availability",
+            "get_shop_date",
+            "list_unpaid_invoices",
+            "list_vendors"
+          ],
+          "delegations_made": 1,
+          "reports": 2,
+          "last_report": "For the requested quantity of 12 CC-HOOD-NAVY, size M, stock is short by 4. Bulldog Print Co is listed as the apparel reprint vendor, but no vendor quote or reprint invoice/availability is recorded; the recorded $22.00 unit cost is pricing data, not a confirmed Bulldog quote. No stock was ordered or reserved."
+        }
+      },
+      "delegations": [
+        {
+          "run_id": "run-7b6eb6ea",
+          "from": "boss",
+          "detail": "boss -> accounting (delegation)",
+          "chain": [
+            "boss"
+          ]
+        },
+        {
+          "run_id": "run-7b6eb6ea",
+          "from": "boss",
+          "detail": "boss -> inventory (delegation)",
+          "chain": [
+            "boss"
+          ]
+        },
+        {
+          "run_id": "run-7b6eb6ea",
+          "from": "inventory",
+          "detail": "inventory -> accounting (peer)",
+          "chain": [
+            "boss",
+            "inventory"
+          ]
+        },
+        {
+          "run_id": "run-7b6eb6ea",
+          "from": "boss",
+          "detail": "boss -> inventory (delegation)",
+          "chain": [
+            "boss"
+          ]
+        },
+        {
+          "run_id": "run-7b6eb6ea",
+          "from": "boss",
+          "detail": "boss -> customer_service (delegation)",
+          "chain": [
+            "boss"
+          ]
+        }
+      ],
+      "human_approvals": [],
+      "payments_made": [],
+      "drafts_not_sent": [
+        {
+          "id": 2,
+          "audience": "customer",
+          "recipient": "Yale AI Club",
+          "subject": "Bulk hoodie pricing \u2014 CC-HOOD-NAVY, size M",
+          "sent": 0
+        }
+      ],
+      "outcome_history": [
+        {
+          "run_id": "run-7b6eb6ea",
+          "outcome": "resolved",
+          "summary": "Decided on a 10% bulk discount offer: $52.20 per hoodie for 20. Customer Service saved an unsent draft asking Yale AI Club to confirm. The ticket is resolved as a discount inquiry; no units were reserved and no replenishment was ordered.",
+          "reasoning": "List price is $58 and unit cost is $22. The offer is $5.80 off per unit and leaves $30.20 gross margin per hoodie ($604 across 20 at the recorded unit cost). Inventory shows 8 size M hoodies on hand, 12 short. Bulldog Print Co has a listed 5-day lead time, which from the shop date 2026-08-31 points to 2026-09-05, but there is no recorded vendor quote or confirmed availability, so the draft does not promise the full quantity or date. Accounting reports $3,400 checking, $840 in unpaid invoices, and $2,400 next rent, leaving $160 uncommitted; no payment was requested.",
+          "delegated_to": [
+            "accounting",
+            "inventory",
+            "customer_service"
+          ],
+          "actions_taken": [
+            "update_ticket_status({'ticket_id': 103, 'status': 'resolved', 'resolution_note': 'Approved a 10% bulk-discount offer at $52.20 per CC-HOOD-NAVY size M hoodie for the requested 20 (list price $58.00; unit cost $22.00). Customer Service saved unsent draft 2 asking Yale AI Club to confirm. Inventory has 8 on hand, leaving 12 short; Bulldog Print Co has a 5-day listed lead time (2026-09-05 from shop date 2026-08-31), but no quote or confirmed availability exists, so the draft does not promise the full quantity/date. No stock was reserved and no order/reprint was placed pending customer confirmation and a vendor quote.', 'updated_by': 'boss'}) -> ok"
+          ],
+          "drafts_not_sent": [
+            "draft 2 to Yale AI Club (customer, not sent)"
+          ]
+        }
+      ]
+    }
+  ]
+}

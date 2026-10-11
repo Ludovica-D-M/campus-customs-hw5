@@ -1,0 +1,308 @@
+/* Campus Customs operations desk — black and pink.
+   One accent colour does all the signalling, so when something is pink it
+   means it needs a person. Everything else stays quiet. */
+
+:root {
+  --bg: #0a0a0c;
+  --panel: #141418;
+  --panel-2: #1b1b21;
+  --raised: #22222a;
+  --line: #2a2a33;
+  --ink: #f2f2f5;
+  --ink-2: #c8c8d2;
+  --muted: #8b8b9a;
+  --pink: #ff3d87;
+  --pink-soft: #ff8ab8;
+  --pink-dim: rgba(255, 61, 135, 0.12);
+  --green: #4ade80;
+  --amber: #ffb44d;
+  --red: #ff6f5e;
+  --mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+  --radius: 10px;
+}
+
+* { box-sizing: border-box; }
+
+html, body, #root { height: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 15px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+button { font: inherit; cursor: pointer; }
+button:disabled { cursor: not-allowed; opacity: 0.45; }
+code { font-family: var(--mono); font-size: 0.88em; }
+
+/* ---------------------------------------------------------------- shell */
+
+.desk { display: flex; flex-direction: column; min-height: 100%; }
+
+.topbar {
+  display: flex; align-items: center; gap: 20px;
+  padding: 14px 24px;
+  border-bottom: 1px solid var(--line);
+  background: linear-gradient(180deg, #121216, #0d0d10);
+  position: sticky; top: 0; z-index: 20;
+}
+.brand { display: flex; align-items: baseline; gap: 10px; margin-right: auto; }
+.brand h1 { margin: 0; font-size: 17px; letter-spacing: -0.01em; }
+.brand h1 span { color: var(--pink); }
+.brand .date { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+
+.pill {
+  display: inline-flex; align-items: center; gap: 7px;
+  border: 1px solid var(--line); background: var(--panel-2);
+  border-radius: 999px; padding: 5px 12px; font-size: 12.5px; color: var(--muted);
+}
+.pill .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); }
+.pill.off .dot { background: var(--red); }
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(360px, 0.95fr);
+  gap: 20px; padding: 20px 24px 40px; align-items: start;
+  max-width: 1680px; width: 100%; margin: 0 auto;
+}
+@media (max-width: 1080px) { .layout { grid-template-columns: 1fr; } }
+
+.col { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+
+.card {
+  background: var(--panel); border: 1px solid var(--line);
+  border-radius: var(--radius); overflow: hidden;
+}
+.card > header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 13px 16px; border-bottom: 1px solid var(--line);
+}
+.card > header h2 {
+  margin: 0; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--muted); font-weight: 600;
+}
+.card > header .spacer { margin-left: auto; }
+.card .body { padding: 16px; }
+
+/* ----------------------------------------------------------- cash panel */
+
+.cash { display: grid; gap: 14px; }
+.cash .figure { font-size: 34px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; }
+.cash .figure.tight { color: var(--amber); }
+.cash .figure.negative { color: var(--red); }
+.cash .sub { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+
+.meter { height: 8px; border-radius: 999px; background: var(--raised); overflow: hidden; display: flex; }
+.meter i { display: block; height: 100%; }
+.meter i.rent { background: var(--pink); }
+.meter i.invoices { background: var(--pink-soft); }
+.meter i.free { background: var(--green); }
+
+.legend { display: grid; gap: 7px; font-size: 13px; }
+.legend div { display: flex; align-items: center; gap: 8px; }
+.legend .key { width: 9px; height: 9px; border-radius: 2px; }
+.legend .val { margin-left: auto; font-family: var(--mono); font-size: 12.5px; }
+
+/* -------------------------------------------------------------- tickets */
+
+.tickets { display: grid; gap: 12px; }
+
+.ticket {
+  background: var(--panel-2); border: 1px solid var(--line);
+  border-left: 3px solid var(--line); border-radius: 9px; padding: 13px 15px;
+  display: grid; gap: 9px; transition: border-color 0.15s, background 0.15s;
+}
+.ticket:hover { background: var(--raised); }
+.ticket.sel { border-color: var(--pink); background: var(--pink-dim); }
+.ticket.s-resolved { border-left-color: var(--green); }
+.ticket.s-awaiting_approval { border-left-color: var(--pink); }
+.ticket.s-blocked { border-left-color: var(--red); }
+.ticket.s-open { border-left-color: var(--muted); }
+
+.ticket .head { display: flex; align-items: flex-start; gap: 11px; }
+.ticket .head input { margin-top: 4px; accent-color: var(--pink); width: 15px; height: 15px; }
+.ticket .title { font-weight: 650; font-size: 15px; }
+.ticket .who { font-size: 12.5px; color: var(--muted); }
+
+.badge {
+  font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase;
+  padding: 3px 9px; border-radius: 999px; border: 1px solid; white-space: nowrap;
+  font-weight: 600;
+}
+.badge.resolved { color: var(--green); border-color: rgba(74,222,128,.4); background: rgba(74,222,128,.1); }
+.badge.awaiting_approval { color: var(--pink); border-color: rgba(255,61,135,.45); background: var(--pink-dim); }
+.badge.blocked { color: var(--red); border-color: rgba(255,111,94,.4); background: rgba(255,111,94,.1); }
+.badge.open { color: var(--muted); border-color: var(--line); background: var(--raised); }
+
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  font-family: var(--mono); font-size: 11.5px; color: var(--ink-2);
+  background: var(--raised); border: 1px solid var(--line);
+  border-radius: 5px; padding: 2px 7px;
+}
+
+.note {
+  font-size: 12.5px; color: var(--muted); white-space: pre-wrap;
+  border-top: 1px dashed var(--line); padding-top: 8px; max-height: 108px; overflow: auto;
+}
+
+/* ------------------------------------------------------------- controls */
+
+.btn {
+  border: 1px solid var(--line); background: var(--raised); color: var(--ink);
+  border-radius: 8px; padding: 8px 14px; font-size: 13.5px; font-weight: 550;
+  transition: background 0.15s, border-color 0.15s;
+}
+.btn:hover:not(:disabled) { border-color: var(--pink); color: var(--pink); }
+.btn.primary { background: var(--pink); border-color: var(--pink); color: #15000a; font-weight: 700; }
+.btn.primary:hover:not(:disabled) { background: var(--pink-soft); border-color: var(--pink-soft); color: #15000a; }
+.btn.ghost { background: transparent; }
+.btn.danger:hover:not(:disabled) { border-color: var(--red); color: var(--red); }
+.btn.small { padding: 5px 11px; font-size: 12.5px; }
+
+.runbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.runbar .hint { font-size: 12.5px; color: var(--muted); margin-left: auto; }
+
+/* ------------------------------------------------------------ approvals */
+
+.approval {
+  border: 1px solid var(--pink); background: var(--pink-dim);
+  border-radius: 9px; padding: 14px; display: grid; gap: 11px;
+}
+.approval.decided { border-color: var(--line); background: var(--panel-2); }
+.approval .amount { font-size: 25px; font-weight: 700; letter-spacing: -0.02em; }
+.approval .reason { font-size: 13px; color: var(--ink-2); }
+.approval .meta { font-size: 12px; color: var(--muted); font-family: var(--mono); }
+.approval .actions { display: flex; gap: 8px; align-items: center; }
+.approval input[type="text"] {
+  flex: 1; min-width: 0; background: var(--bg); color: var(--ink);
+  border: 1px solid var(--line); border-radius: 7px; padding: 7px 10px; font: inherit; font-size: 13px;
+}
+.approval input[type="text"]:focus { outline: none; border-color: var(--pink); }
+
+.empty { color: var(--muted); font-size: 13.5px; text-align: center; padding: 22px 10px; }
+
+/* ------------------------------------------------------------- activity */
+
+.feed { max-height: 620px; overflow: auto; padding: 4px 0; }
+
+.step { display: grid; grid-template-columns: 30px 1fr; gap: 11px; padding: 7px 16px; }
+.step:hover { background: var(--panel-2); }
+.step .avatar {
+  width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center;
+  font-size: 12px; font-weight: 700; color: #0b0b0e; margin-top: 1px;
+}
+.step .line1 { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.step .name { font-weight: 650; font-size: 13.5px; }
+.step .verb { color: var(--muted); font-size: 12.5px; }
+.step .ts { margin-left: auto; font-family: var(--mono); font-size: 11px; color: #5f5f6e; }
+.step .tool { font-family: var(--mono); font-size: 12px; color: var(--pink-soft); }
+.step .text { font-size: 13.5px; color: var(--ink-2); margin-top: 2px; }
+.step .args {
+  font-family: var(--mono); font-size: 11.5px; color: var(--muted);
+  background: var(--panel-2); border: 1px solid var(--line); border-radius: 6px;
+  padding: 5px 8px; margin-top: 5px; overflow-x: auto; white-space: pre-wrap; word-break: break-word;
+}
+.step.ev-delegation .text { color: var(--pink-soft); }
+.step.ev-human_decision { background: rgba(74, 222, 128, 0.07); }
+.step.ev-approval_requested { background: var(--pink-dim); }
+.step.ev-error .text, .step.ev-limit_reached .text { color: var(--red); }
+
+/* ---------------------------------------------------------- agent cards */
+
+.roster { display: grid; gap: 10px; }
+.agentcard {
+  display: grid; grid-template-columns: 34px 1fr; gap: 12px;
+  background: var(--panel-2); border: 1px solid var(--line);
+  border-radius: 9px; padding: 12px 14px;
+}
+.agentcard .avatar {
+  width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center;
+  font-size: 13.5px; font-weight: 700; color: #0b0b0e;
+}
+.agentcard .name { font-weight: 650; font-size: 14px; }
+.agentcard .role { font-size: 12.5px; color: var(--muted); margin-top: 1px; }
+.agentcard .stats { display: flex; gap: 14px; margin-top: 8px; flex-wrap: wrap; }
+.agentcard .stat { font-size: 12px; color: var(--muted); }
+.agentcard .stat b { color: var(--ink); font-family: var(--mono); font-size: 13px; }
+.agentcard .last { font-size: 12.5px; color: var(--ink-2); margin-top: 7px;
+  border-top: 1px dashed var(--line); padding-top: 7px; }
+.agentcard.idle { opacity: 0.55; }
+
+/* ------------------------------------------------------------ run / log */
+
+.runcard { display: grid; gap: 9px; font-size: 13.5px; }
+.runcard .rid { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.outcome { font-weight: 650; }
+.outcome.resolved { color: var(--green); }
+.outcome.awaiting_approval { color: var(--pink); }
+.outcome.blocked { color: var(--red); }
+
+.banner {
+  border: 1px solid var(--red); background: rgba(255, 111, 94, 0.1);
+  color: var(--red); border-radius: 8px; padding: 10px 14px; font-size: 13.5px;
+}
+.banner.info { border-color: var(--line); background: var(--panel-2); color: var(--muted); }
+
+.spin {
+  width: 13px; height: 13px; border-radius: 50%;
+  border: 2px solid rgba(255,61,135,.3); border-top-color: var(--pink);
+  animation: spin 0.8s linear infinite; display: inline-block;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+::-webkit-scrollbar { width: 9px; height: 9px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--raised); border-radius: 5px; }
+::-webkit-scrollbar-thumb:hover { background: var(--line); }
+
+/* --------------------------------------------------------- scope picker */
+/* Which ticket, and which run of it, the feed and roster describe. There is
+   no "everything" option on purpose: a count that mixes tickets is a number
+   nobody can act on. */
+
+.scopebar {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  padding: 9px 16px; border-bottom: 1px solid var(--line); background: var(--panel-2);
+}
+
+.tickettabs { display: flex; gap: 5px; }
+.tickettabs button {
+  border: 1px solid var(--line); background: var(--raised); color: var(--muted);
+  border-radius: 7px; padding: 4px 12px; font-size: 12.5px;
+  font-family: var(--mono); transition: all 0.15s;
+}
+.tickettabs button:hover { color: var(--ink); border-color: var(--muted); }
+.tickettabs button.on {
+  background: var(--pink-dim); border-color: var(--pink); color: var(--pink); font-weight: 700;
+}
+
+.runpick { display: flex; align-items: center; gap: 7px; margin-left: auto; }
+.runpick span { font-size: 11.5px; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); }
+.runpick select {
+  background: var(--raised); color: var(--ink-2); border: 1px solid var(--line);
+  border-radius: 7px; padding: 4px 9px; font: inherit; font-size: 12.5px;
+  font-family: var(--mono);
+}
+.runpick select:focus { outline: none; border-color: var(--pink); }
+
+/* ------------------------------------------------- cash obligation lists */
+/* Each obligation carries its due date, because "committed" without a date
+   is what made a solvent shop read as over-committed. */
+
+.obligations { border-top: 1px solid var(--line); padding-top: 11px; }
+.obligations h4 {
+  margin: 0 0 7px; font-size: 11px; letter-spacing: 0.09em;
+  text-transform: uppercase; color: var(--muted); font-weight: 600;
+}
+.ob { display: flex; align-items: baseline; gap: 9px; font-size: 12.5px; padding: 2px 0; }
+.ob-label { color: var(--ink-2); }
+.ob-date { font-family: var(--mono); font-size: 11.5px; color: var(--muted); }
+.ob-date.overdue { color: var(--pink-soft); }
+.ob-amt { margin-left: auto; font-family: var(--mono); font-size: 12.5px; color: var(--ink); }
+.shortfall {
+  margin-top: 9px; font-size: 12.5px; color: var(--amber);
+  border-left: 2px solid var(--amber); padding-left: 9px;
+}

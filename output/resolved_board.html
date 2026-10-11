@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Campus Customs — Resolved Board</title>
+<style>
+  :root{
+    --bg:#0a0a0c; --panel:#141418; --panel-2:#1c1c22; --line:#2a2a33;
+    --ink:#f2f2f5; --ink-2:#d4d4de; --muted:#9a9aa8;
+    --pink:#ff3d87; --pink-soft:#ff8ab8; --pink-dim:rgba(255,61,135,.13);
+    --green:#4ade80; --red:#ff6f5e; --amber:#ffb44d;
+    --mono:ui-monospace,SFMono-Regular,Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0; background:var(--bg); color:var(--ink);
+       font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
+  .wrap{max-width:1400px; margin:0 auto; padding:44px 24px 90px}
+  header.top h1{margin:0 0 6px; font-size:27px; letter-spacing:-.02em}
+  header.top h1 span{color:var(--pink)}
+  header.top p{margin:0 0 10px; color:var(--muted); font-size:14px}
+  .facts{display:flex; flex-wrap:wrap; gap:8px 10px; margin:0 0 34px; padding:0; list-style:none}
+  .facts li{background:var(--panel-2); border:1px solid var(--line); border-radius:999px;
+            padding:5px 13px; font-size:13px; color:var(--muted)}
+  .facts li b{color:var(--ink)}
+  .facts li.warn{border-color:var(--pink); color:var(--pink-soft)}
+
+  section.shot{margin:0 0 54px; background:var(--panel); border:1px solid var(--line);
+               border-radius:12px; overflow:hidden}
+  section.shot > .head{padding:18px 22px; border-bottom:1px solid var(--line)}
+  section.shot h2{margin:0 0 5px; font-size:19px}
+  section.shot .sub{color:var(--muted); font-size:13.5px; font-family:var(--mono)}
+  .tag{font-size:11.5px; letter-spacing:.05em; text-transform:uppercase; font-weight:700;
+       padding:4px 11px; border-radius:999px; border:1px solid; margin-left:8px}
+  .tag.resolved{color:var(--green); border-color:rgba(74,222,128,.45); background:rgba(74,222,128,.1)}
+  .tag.blocked{color:var(--red); border-color:rgba(255,111,94,.45); background:rgba(255,111,94,.1)}
+  section.shot .caption{padding:16px 22px; border-bottom:1px solid var(--line);
+                        color:var(--ink-2); font-size:14px}
+  section.shot .caption b{color:var(--ink)}
+  section.shot figure{margin:0; background:#060608}
+  section.shot img{display:block; width:100%; height:auto; border-top:1px solid var(--line)}
+  .look{padding:14px 22px; color:var(--muted); font-size:13px; border-top:1px solid var(--line)}
+  .look b{color:var(--pink-soft)}
+  footer{margin-top:40px; padding-top:20px; border-top:1px solid var(--line);
+         color:var(--muted); font-size:12.5px}
+  code{font-family:var(--mono); font-size:.88em; color:var(--pink-soft)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <h1>Campus Customs — <span>Resolved Board</span></h1>
+  <p>Screenshots captured from the running React dashboard at <code>localhost:5173</code>,
+     reading the live FastAPI backend, after the agents worked all three tickets.</p>
+  <ul class="facts">
+    <li>shop date <b>2026-08-31</b></li>
+    <li>start <b>$3,400.00</b></li>
+    <li>end <b>$1,000.00</b></li>
+    <li class="warn">net <b>−$2,400.00</b></li>
+    <li><b>2</b> resolved, <b>1</b> blocked</li>
+    <li><b>1</b> human approval</li>
+    <li><b>255,707</b> tokens</li>
+  </ul>
+</header>
+
+<section class="shot">
+  <div class="head">
+    <h2>The whole desk</h2>
+    <div class="sub">desk-overview.png · captured from the live dashboard</div>
+  </div>
+  <div class="caption">
+    All three tickets in their final state, the cash position after the rent payment, and the
+    approval you authorized. <b>1 blocked, 2 resolved</b> — and the resolved count is two, not
+    three, because ticket 101 genuinely could not be finished.
+  </div>
+  <figure><img src="screenshots/desk-overview.png" alt="The Campus Customs operations desk showing all three tickets, the checking balance and the approved payment."></figure>
+  <div class="look">
+    <b>Worth noticing:</b> “Needs a human” shows the $2,400 rent as <b>paid by Ludovica Di
+    Mizio (owner, authorized in session)</b> — a person's name, not an agent's. The checking
+    panel leads with <b>$160.00 free after what is due now</b> rather than the $1,000.00
+    balance, with invoice 501 listed as due and October's rent listed separately as coming up.
+  </div>
+</section>
+
+<section class="shot">
+  <div class="head">
+    <h2>Ticket 101 — Bulldog tee <span class="tag blocked">blocked</span></h2>
+    <div class="sub">ticket-101.png · 30 steps in scope · runs run-688afd3c, run-4ad8798b</div>
+  </div>
+  <div class="caption">
+    The activity feed and the team roster are both scoped to ticket 101 alone. Customer Service
+    drafts a reply that says the tee is out of stock and <b>refuses to promise a date</b>; the
+    Boss records the ticket as blocked with the reason. <b>No money moved and no stock changed.</b>
+  </div>
+  <figure><img src="screenshots/ticket-101.png" alt="Ticket 101 in focus: the agent activity feed and per-agent contributions for that ticket only."></figure>
+  <div class="look">
+    <b>Worth noticing:</b> the draft body is visible in the tool arguments — “we don't have a
+    confirmed reprint quantity, receipt, or arrival estimate, so we can't promise fulfillment
+    or give you a date yet.” In the roster, <b>Accounting and Facilities read “not needed
+    yet”</b> on this run rather than showing zeroes.
+  </div>
+</section>
+
+<section class="shot">
+  <div class="head">
+    <h2>Ticket 102 — Rent due <span class="tag resolved">resolved</span></h2>
+    <div class="sub">ticket-102.png · 26 steps in scope · runs run-7148ae7f, run-e0373480</div>
+  </div>
+  <div class="caption">
+    The only ticket that moved money. Facilities verified the demand against lease 1, Accounting
+    staged $2,400 and stopped, you approved it, and a <b>second run</b> confirmed nothing else
+    remained before the Boss marked it resolved.
+  </div>
+  <figure><img src="screenshots/ticket-102.png" alt="Ticket 102 in focus: Facilities and Accounting activity, the approved payment and the resolved status."></figure>
+  <div class="look">
+    <b>Worth noticing:</b> Facilities reports that the lease's <code>next_due</code> is
+    2026-10-02, <b>not the 2026-09-02 the notice implied</b> — the verification step catching a
+    discrepancy in the landlord's email rather than taking it on trust.
+  </div>
+</section>
+
+<section class="shot">
+  <div class="head">
+    <h2>Ticket 103 — Bulk hoodie discount <span class="tag resolved">resolved</span></h2>
+    <div class="sub">ticket-103.png · 65 steps in scope · run run-7b6eb6ea</div>
+  </div>
+  <div class="caption">
+    The longest run of the three. Accounting priced the discount against the $22 cost floor,
+    Inventory sized the 12-unit shortfall and took the funding question <b>straight to
+    Accounting</b> rather than back through the Boss, and Customer Service drafted one reply
+    covering price and availability together. Resolved at <b>$52.20 a unit</b> with
+    <b>no money spent</b>.
+  </div>
+  <figure><img src="screenshots/ticket-103.png" alt="Ticket 103 in focus: the longest activity feed, showing Accounting, Inventory and Customer Service contributions."></figure>
+  <div class="look">
+    <b>Worth noticing:</b> the feed contains a peer handoff — <b>Inventory → Accounting</b>,
+    agent to agent with no Boss in between. The roster counts for this ticket differ from
+    101's, because each is scoped to its own ticket and run rather than summed across the trail.
+  </div>
+</section>
+
+<footer>
+  Campus Customs multi-agent operations · screenshots taken with Playwright against the running
+  Vite dev server and FastAPI backend · underlying records in
+  <code>output/resolved_tickets.json</code> and <code>output/audit_trail.json</code>
+</footer>
+
+</div>
+</body>
+</html>

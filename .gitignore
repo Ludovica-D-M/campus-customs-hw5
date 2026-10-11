@@ -1,0 +1,41 @@
+# ---- Secrets: never commit these ----
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*token_cache*
+.session_secret
+
+# ---- Python ----
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ---- Node / Vite ----
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# ---- macOS ----
+.DS_Store
+._*
+
+# ---- Editor ----
+.vscode/
+.idea/
+*.swp
+
+# ---- Logs / scratch ----
+*.log
+data.zip
+
+# NOTE: data/*.db is deliberately NOT ignored. Both the original
+# campus_customs.db and the working copy campus_customs_new.db are part of the
+# submission, so the graded run can be reproduced and inspected.

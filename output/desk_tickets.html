@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Campus Customs — Operations Desk</title>
+<style>
+  :root{
+    --bg:#0a0a0c; --panel:#141418; --panel-2:#1c1c22; --line:#2a2a33;
+    --ink:#f2f2f5; --muted:#9a9aa8; --pink:#ff3d87; --pink-soft:#ff8ab8;
+    --pink-dim:rgba(255,61,135,.14);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  }
+  .wrap{max-width:1000px; margin:0 auto; padding:40px 24px 80px}
+  header h1{margin:0 0 6px; font-size:26px; letter-spacing:-.02em}
+  header h1 span{color:var(--pink)}
+  header p{margin:0 0 28px; color:var(--muted); font-size:14px}
+
+  /* tabs */
+  .tabs{display:flex; flex-wrap:wrap; gap:6px; border-bottom:1px solid var(--line); margin-bottom:28px}
+  .tabs button{
+    appearance:none; background:none; border:0; border-bottom:2px solid transparent;
+    color:var(--muted); font:inherit; font-size:15px; padding:10px 16px;
+    cursor:pointer; border-radius:6px 6px 0 0;
+  }
+  .tabs button:hover{color:var(--ink); background:var(--pink-dim)}
+  .tabs button[aria-selected="true"]{color:var(--pink); border-bottom-color:var(--pink); font-weight:600}
+  .tabs button:focus-visible{outline:2px solid var(--pink); outline-offset:-2px}
+
+  .panel[hidden]{display:none}
+
+  /* ticket header */
+  .meta{
+    background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--pink);
+    border-radius:8px; padding:16px 18px; margin-bottom:26px;
+  }
+  .meta h2{margin:0 0 4px; font-size:19px}
+  .meta .req{color:var(--muted); font-size:14px; margin:0 0 12px}
+  .facts{display:flex; flex-wrap:wrap; gap:8px 10px; margin:0; padding:0; list-style:none}
+  .facts li{
+    background:var(--panel-2); border:1px solid var(--line); border-radius:999px;
+    padding:4px 12px; font-size:13px; color:var(--muted);
+  }
+  .facts li b{color:var(--ink); font-weight:600}
+  .facts li.warn{border-color:var(--pink); color:var(--pink-soft)}
+
+  h3.section{
+    font-size:13px; text-transform:uppercase; letter-spacing:.09em;
+    color:var(--pink); margin:30px 0 14px; padding-bottom:7px; border-bottom:1px solid var(--line);
+  }
+
+  /* steps */
+  ol.steps{list-style:none; margin:0; padding:0; counter-reset:s}
+  ol.steps > li{
+    counter-increment:s; position:relative; padding:0 0 22px 44px; margin:0;
+  }
+  ol.steps > li::before{
+    content:counter(s); position:absolute; left:0; top:1px;
+    width:28px; height:28px; border-radius:50%;
+    background:var(--pink-dim); border:1px solid var(--pink); color:var(--pink);
+    font-size:13px; font-weight:700; display:grid; place-items:center;
+  }
+  ol.steps > li::after{
+    content:""; position:absolute; left:14px; top:32px; bottom:4px; width:1px; background:var(--line);
+  }
+  ol.steps > li:last-child::after{display:none}
+  .who{font-weight:650; font-size:16px}
+  .who em{font-style:normal; color:var(--muted); font-weight:400; font-size:14px}
+  .why{margin:5px 0 9px; color:#d4d4de}
+  .tools{display:flex; flex-wrap:wrap; gap:6px; margin:0; padding:0; list-style:none}
+  .tools li{
+    font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:12.5px;
+    background:var(--panel-2); border:1px solid var(--line); border-radius:5px;
+    padding:3px 8px; color:var(--pink-soft);
+  }
+
+  .notinvolved{
+    background:var(--panel); border:1px solid var(--line); border-radius:8px;
+    padding:14px 18px; margin-top:22px; font-size:14px; color:var(--muted);
+  }
+  .notinvolved b{color:var(--ink)}
+
+  .assume{
+    background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--pink-soft);
+    border-radius:8px; padding:14px 18px; margin-top:22px; font-size:14px;
+  }
+  .assume b{display:block; margin-bottom:6px; font-size:12.5px; letter-spacing:.07em;
+            text-transform:uppercase; color:var(--pink-soft)}
+  .assume ul{margin:0; padding-left:18px; color:#d4d4de}
+  .assume li{margin:5px 0}
+  .actual{
+    border:1px dashed var(--line); border-radius:8px; padding:26px 20px;
+    text-align:center; color:var(--muted); font-size:14px;
+  }
+  table.t{width:100%; border-collapse:collapse; font-size:13.5px; margin:10px 0 18px}
+  table.t th,table.t td{text-align:left; padding:7px 10px; border-bottom:1px solid var(--line);
+                        vertical-align:top}
+  table.t th{font-size:11.5px; letter-spacing:.07em; text-transform:uppercase;
+             color:var(--pink-soft); font-weight:600}
+  table.t td.num{font-family:ui-monospace,Menlo,monospace; text-align:right; white-space:nowrap}
+  table.t tr.total td{border-top:2px solid var(--pink); border-bottom:none; font-weight:700}
+  .verdict{display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin:4px 0 16px}
+  .tag{font-size:11.5px; letter-spacing:.05em; text-transform:uppercase; font-weight:700;
+       padding:4px 11px; border-radius:999px; border:1px solid}
+  .tag.resolved{color:#4ade80; border-color:rgba(74,222,128,.45); background:rgba(74,222,128,.1)}
+  .tag.blocked{color:#ff6f5e; border-color:rgba(255,111,94,.45); background:rgba(255,111,94,.1)}
+  .tag.match{color:var(--pink); border-color:var(--pink); background:var(--pink-dim)}
+  .tag.differ{color:#ffb44d; border-color:rgba(255,180,77,.45); background:rgba(255,180,77,.1)}
+  .flow{font-family:ui-monospace,Menlo,monospace; font-size:12.5px; color:var(--ink);
+        background:var(--panel-2); border:1px solid var(--line); border-radius:7px;
+        padding:9px 12px; margin:6px 0 16px; line-height:1.9}
+  .flow b{color:var(--pink)}
+  .quote{border-left:2px solid var(--pink-soft); padding-left:12px; margin:10px 0 16px;
+         color:#d4d4de; font-size:13.5px}
+  .mono{font-family:ui-monospace,Menlo,monospace; font-size:12.5px}
+  .soon{
+    background:var(--panel); border:1px solid var(--line); border-radius:10px;
+    padding:48px 24px; text-align:center;
+  }
+  .soon h2{margin:0 0 8px; font-size:20px; color:var(--pink)}
+  .soon p{margin:0; color:var(--muted); font-size:14px}
+  footer{margin-top:44px; padding-top:18px; border-top:1px solid var(--line);
+         color:var(--muted); font-size:12.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>Campus Customs — <span>Operations Desk</span></h1>
+  <p>Plans for the three open tickets, written before the agents ran. Shop date: 2026-08-31 · Checking: $3,400</p>
+</header>
+
+<div class="tabs" role="tablist">
+  <button role="tab" id="t101" aria-controls="p101" aria-selected="true">Ticket 101</button>
+  <button role="tab" id="t102" aria-controls="p102" aria-selected="false">Ticket 102</button>
+  <button role="tab" id="t103" aria-controls="p103" aria-selected="false">Ticket 103</button>
+  <button role="tab" id="tcash" aria-controls="pcash" aria-selected="false">Cash</button>
+  <button role="tab" id="trefl" aria-controls="prefl" aria-selected="false">Reflection</button>
+</div>
+
+<!-- ───────────────────────────── 101 ───────────────────────────── -->
+<section class="panel" id="p101" role="tabpanel" aria-labelledby="t101">
+  <div class="meta">
+    <h2>Ticket 101 — Bulldog tee</h2>
+    <p class="req">customer_order · Tauhid Zaman · raised 2026-08-31 09:15</p>
+    <ul class="facts">
+      <li><b>CC-TEE-WHITE</b> size <b>S</b></li>
+      <li>qty <b>1</b></li>
+      <li class="warn"><b>0</b> on hand</li>
+      <li>linked invoice <b>501</b>, $840</li>
+      <li class="warn"><b>unpaid</b>, due 2026-08-28</li>
+      <li>desc: <b>"Rush reprint CC-TEE-WHITE S"</b></li>
+    </ul>
+  </div>
+
+  <h3 class="section">Expected</h3>
+  <ol class="steps">
+    <li>
+      <div class="who">Boss <em>— receives the ticket</em></div>
+      <p class="why">Every ticket starts here. The Boss calls <code>get_ticket(101)</code>,
+      which resolves the ticket's foreign keys in one call: <code>sku</code> and
+      <code>size</code> pull the inventory row, and <code>invoice_id = 501</code> pulls the
+      invoice joined to its vendor. So before delegating anything the Boss can see an empty
+      shelf and an unpaid $840 invoice whose <code>description</code> reads "Rush reprint
+      CC-TEE-WHITE S" — the same item. The
+      <code>type = customer_order</code> is what routes it to Inventory first.</p>
+      <ul class="tools"><li>get_ticket</li><li>get_shop_date</li><li>ask_inventory</li></ul>
+    </li>
+    <li>
+      <div class="who">Inventory <em>— first delegation</em></div>
+      <p class="why">This is a stock question before it is anything else. Until someone
+      confirms the shelf is empty, every other step is premature. Inventory also owns the
+      harder half: the ticket points at invoice 501, whose description names this same sku
+      and size. What the record proves is that the shop has been billed $840 for a reprint of
+      it. What the record does not say is whether those goods exist yet, have shipped, or are
+      waiting on payment — so Inventory reports what is actually on the shelf and is explicit
+      about what cannot be established.</p>
+      <ul class="tools">
+        <li>check_item_availability</li><li>list_vendors</li><li>list_unpaid_invoices</li>
+      </ul>
+    </li>
+    <li>
+      <div class="who">Accounting <em>— second, if clearing invoice 501 is on the table</em></div>
+      <p class="why">Invoice 501 is <code>open</code> and three days past due, so the $840 is
+      a liability the shop already carries — settling it is a timing decision, not a cost of
+      serving this order. Stated honestly, this ticket's upside is one tee at a $28 list
+      price against an $8 recorded cost: about $20 of gross margin, which cannot on its own
+      justify moving $840 ahead of $2,400 of rent due in two days. Accounting puts that
+      trade-off plainly and stages the payment only if the shop wants the supplier settled on
+      its own merits.</p>
+      <ul class="tools">
+        <li>get_cash_balance</li><li>list_unpaid_invoices</li><li>request_payment_approval</li>
+      </ul>
+    </li>
+    <li>
+      <div class="who">Customer Service <em>— last delegation</em></div>
+      <p class="why">Last on purpose: the reply cannot be written until it is known
+      whether there is a date to give — and here the expected answer is that there is not
+      one. The shop can say the tee is out of stock in size S and that a reprint has been
+      invoiced, but it cannot promise an arrival date, because no field records when those
+      goods were ordered or when they ship. The right draft offers to hold one and come back
+      with a date, rather than quoting 2026-09-05 as though it were confirmed. Drafted, never
+      sent.</p>
+      <ul class="tools">
+        <li>check_item_availability</li><li>list_vendors</li><li>draft_customer_message</li>
+      </ul>
+    </li>
+    <li>
+      <div class="who">Boss <em>— decides and closes</em></div>
+      <p class="why">Sets the status. <code>blocked</code> is the likely outcome — not
+      because the shop failed, but because the one thing the customer wants, a date, is not
+      derivable from the record. <code>awaiting_approval</code> instead if the $840 was
+      staged. Either way the note says what was established and what was not.</p>
+      <ul class="tools"><li>update_ticket_status</li></ul>
+    </li>
+  </ol>
+
+  <div class="notinvolved">
+    <b>Not involved:</b> Facilities. Nothing here touches the lease or the premises.
+  </div>
+
+  <div class="assume">
+    <b>Assumptions, and what in the database supports them</b>
+    <ul>
+      <li><b>Nothing records whether invoice 501 blocks the reprint from shipping.</b>
+      <code>invoices</code> holds only <code>id, vendor_id, amount, due_date, status,
+      description</code> — no shipping or release field. So "overdue, therefore held up" is a
+      judgement, not a fact the agents can read.</li>
+      <li><b>There is no order date.</b> <code>invoices</code> carries
+      <code>due_date</code> and nothing else temporal, so any arrival estimate has to assume
+      the vendor's 5 <code>lead_days</code> runs from <code>desk.date_today</code>. That
+      gives 2026-09-05 as a <em>conditional</em> estimate, not a confirmed date.</li>
+      <li><b>This ticket competes with the others for one pot of cash.</b>
+      <code>cash_accounts</code> holds a single row, checking at $3,400. Invoice 501's $840
+      plus lease 1's $2,400 is $3,240 of it, so whichever ticket runs first changes what the
+      next can afford.</li>
+    </ul>
+  </div>
+
+  <h3 class="section">Actual</h3>
+  <div class="verdict">
+    <span class="tag blocked">blocked</span>
+    <span class="tag match">order of agents matched the plan</span>
+    <span class="tag differ">outcome: blocked, not resolved</span>
+  </div>
+
+  <p class="why">Two runs, <span class="mono">run-688afd3c</span> and
+  <span class="mono">run-4ad8798b</span>. Both reached the same conclusion.</p>
+
+  <div class="flow">
+    <b>Boss</b> → Inventory &nbsp;·&nbsp; Inventory → <b>Accounting</b> (peer, unprompted)
+    &nbsp;·&nbsp; <b>Boss</b> → Customer Service &nbsp;·&nbsp; <b>Boss</b> closes<br>
+    second run: <b>Boss</b> → Inventory &nbsp;·&nbsp; <b>Boss</b> → Customer Service
+    &nbsp;·&nbsp; <b>Boss</b> closes
+  </div>
+
+  <table class="t">
+    <tr><th>Agent</th><th>Tool calls</th><th>Handoffs</th><th>Tools actually used</th></tr>
+    <tr><td>Boss</td><td class="num">7</td><td class="num">4</td>
+        <td class="mono">get_ticket, get_shop_date, list_open_tickets, update_ticket_status</td></tr>
+    <tr><td>Inventory</td><td class="num">7</td><td class="num">1</td>
+        <td class="mono">get_ticket, check_item_availability, get_shop_date, list_vendors</td></tr>
+    <tr><td>Accounting</td><td class="num">4</td><td class="num">0</td>
+        <td class="mono">get_cash_balance, list_unpaid_invoices, get_ticket, get_shop_date</td></tr>
+    <tr><td>Customer Service</td><td class="num">8</td><td class="num">0</td>
+        <td class="mono">get_ticket, get_shop_date, check_item_availability, draft_customer_message</td></tr>
+    <tr><td>Facilities</td><td class="num">0</td><td class="num">0</td><td>— not involved, as planned</td></tr>
+  </table>
+
+  <p class="why"><b>Against the plan.</b> The predicted order — Inventory first, Accounting
+  second, Customer Service last, Boss closing — is exactly what happened. One thing the plan
+  did not predict: Inventory went <em>straight to Accounting</em> rather than returning to the
+  Boss, using the peer channel on its own initiative.</p>
+
+  <p class="why"><b>Outcome: blocked, and the plan expected it.</b> The Problem 6 plan said
+  <code>blocked</code> was the likely outcome because the one thing the customer wants — a
+  date — is not derivable from the record. The agents reached that independently and twice:</p>
+
+  <div class="quote">“Invoice 501 for the Bulldog Print Co rush reprint is open and overdue
+  ($840.00, due 2026-08-28) and lists a 5-day lead time, but no reprint quantity, receipt, or
+  current fulfillment confirmation is recorded; 2026-09-05 is only a nominal lead-time
+  estimate, not a confirmed ETA.”</div>
+
+  <p class="why">No stock was adjusted, no payment was requested, and <b>no money moved</b>.
+  Two reply drafts were saved for Tauhid Zaman (drafts 1 and 3), both
+  <span class="mono">sent = 0</span>. The ticket is recorded <code>blocked</code> rather than
+  resolved because the work genuinely is not finished — which is the honest record, not a
+  failure to close.</p>
+
+</section>
+
+<!-- ───────────────────────────── 102 ───────────────────────────── -->
+<section class="panel" id="p102" role="tabpanel" aria-labelledby="t102" hidden>
+  <div class="meta">
+    <h2>Ticket 102 — Rent due</h2>
+    <p class="req">rent_notice · Elm City Properties · raised 2026-08-31 11:05</p>
+    <ul class="facts">
+      <li>lease <b>1</b>, Chapel Street shop</li>
+      <li><b>$2,400</b>/month</li>
+      <li>next due <b>2026-09-02</b></li>
+      <li>email claims <b>"due in 2 days"</b></li>
+      <li>no sku, no quantity</li>
+    </ul>
+  </div>
+
+  <h3 class="section">Expected</h3>
+  <ol class="steps">
+    <li>
+      <div class="who">Boss <em>— receives the ticket</em></div>
+      <p class="why">The Boss calls <code>get_ticket(102)</code>. There is no
+      <code>sku</code>, <code>size</code> or <code>qty</code> on this ticket — only
+      <code>lease_id = 1</code> — so the resolved record comes back with the lease attached
+      and nothing about product. That shape is what tells the Boss this is a premises matter
+      and routes it to Facilities rather than Inventory.</p>
+      <ul class="tools"><li>get_ticket</li><li>get_shop_date</li><li>ask_facilities</li></ul>
+    </li>
+    <li>
+      <div class="who">Facilities <em>— first delegation</em></div>
+      <p class="why">The ticket is a claim in an email, not a fact. Facilities owns the
+      lease, so it is the only agent that can test the claim against the record: lease 1 says
+      $2,400 and <code>next_due = 2026-09-02</code>, which is exactly two days from the shop
+      date, so the email checks out. It also reads <code>payments</code>, which is empty — no
+      rent has been paid for this period, so this is not a duplicate reminder. Going to
+      Accounting first would risk funding a demand nobody had verified.</p>
+      <ul class="tools"><li>verify_rent_due</li><li>get_shop_date</li></ul>
+    </li>
+    <li>
+      <div class="who">Accounting <em>— second delegation</em></div>
+      <p class="why">Once the demand checks out, affordability is a separate question and
+      a different agent's. $2,400 against a $3,400 balance leaves $1,000, and invoice 501
+      wants $840 of that, so clearing both leaves $160 — under 7% of a month's rent, with no
+      recorded receivables and no second account to draw on. That is solvent on paper and
+      uncomfortably thin in practice, and the plan should say so rather than report $1,000 as
+      though it were free. Accounting stages the payment for the operator; it cannot approve
+      it.</p>
+      <ul class="tools">
+        <li>get_cash_balance</li><li>list_unpaid_invoices</li><li>request_payment_approval</li>
+      </ul>
+    </li>
+    <li>
+      <div class="who">Boss <em>— only if Accounting escalates</em></div>
+      <p class="why">With $160 left after both, which claim gives way is not Accounting's
+      call — it is a judgement about the shop, so it escalates back up. The expected answer
+      is that rent is paid: it is the obligation attached to the premises the shop trades
+      from, and it has a dated deadline on file, whereas invoice 501 is a trade payable
+      already late. Worth being clear that the database states no consequence for either —
+      no late fee, no eviction clause — so this ranking is commercial judgement, not a rule
+      read from the data.</p>
+      <ul class="tools"><li>escalate_to_boss</li><li>get_cash_balance</li></ul>
+    </li>
+    <li>
+      <div class="who">Human operator <em>— the gate</em></div>
+      <p class="why">No agent can approve this. The run pauses, prints the amount, account
+      and reason, and waits for a person to type <code>approve</code>. With nobody at the
+      terminal the payment stays pending and the ticket stops here. The runner — not an
+      agent — then records the decision and settles the payment.</p>
+      <ul class="tools"><li>record_human_decision</li><li>record_approved_payment</li></ul>
+    </li>
+    <li>
+      <div class="who">Boss <em>— decides and closes</em></div>
+      <p class="why">Marks the ticket <code>awaiting_approval</code>; it becomes
+      <code>resolved</code> only once the payment actually clears.</p>
+      <ul class="tools"><li>update_ticket_status</li></ul>
+    </li>
+  </ol>
+
+  <div class="notinvolved">
+    <b>Not involved:</b> Inventory — the ticket carries no sku, size or qty. <b>Customer
+    Service</b> — the counterparty is a landlord, and the shop does not contact anyone; a
+    reply here would be a human's to write.
+  </div>
+
+  <div class="assume">
+    <b>Assumptions, and what in the database supports them</b>
+    <ul>
+      <li><b>"Rent outranks the vendor invoice" is a judgement, not a stated rule.</b>
+      <code>leases</code> holds only <code>space_name, landlord, monthly_rent, next_due,
+      notes</code> — no grace period, no late fee — and lease 1's <code>notes</code> is
+      empty. Nothing in the data ranks the two obligations.</li>
+      <li><b>The demand is genuinely outstanding.</b> <code>payments</code> has zero rows,
+      so no rent has been paid for this period. <code>verify_rent_due</code> reads that same
+      table and is what confirms it rather than assuming it.</li>
+      <li><b>Paying rent moves the due date.</b> That is the server's behaviour, not the
+      ticket's: <code>record_approved_payment</code> rolls <code>leases.next_due</code>
+      forward one month. So the ticket should only read <code>resolved</code> after the money
+      clears, not when it is staged.</li>
+    </ul>
+  </div>
+
+  <h3 class="section">Actual</h3>
+  <div class="verdict">
+    <span class="tag resolved">resolved</span>
+    <span class="tag match">order of agents matched the plan</span>
+    <span class="tag match">human gate held</span>
+  </div>
+
+  <p class="why">Two runs either side of the approval:
+  <span class="mono">run-7148ae7f</span> staged the payment, you decided it, and
+  <span class="mono">run-e0373480</span> confirmed the ticket could close.</p>
+
+  <div class="flow">
+    <b>Boss</b> → Facilities &nbsp;·&nbsp; <b>Boss</b> → Accounting
+    &nbsp;·&nbsp; staged approval 1, ticket set <code>awaiting_approval</code><br>
+    <b>You</b> approved $2,400 &nbsp;·&nbsp; payment 1 recorded &nbsp;·&nbsp;
+    ticket returned to <code>open</code><br>
+    second run: <b>Boss</b> → Facilities &nbsp;·&nbsp; <b>Boss</b> → Accounting
+    &nbsp;·&nbsp; <b>Boss</b> resolves
+  </div>
+
+  <table class="t">
+    <tr><th>Agent</th><th>Tool calls</th><th>Handoffs</th><th>Tools actually used</th></tr>
+    <tr><td>Boss</td><td class="num">7</td><td class="num">4</td>
+        <td class="mono">get_ticket, get_shop_date, get_cash_balance, update_ticket_status</td></tr>
+    <tr><td>Facilities</td><td class="num">6</td><td class="num">0</td>
+        <td class="mono">get_ticket, get_shop_date, verify_rent_due</td></tr>
+    <tr><td>Accounting</td><td class="num">10</td><td class="num">0</td>
+        <td class="mono">get_cash_balance, list_unpaid_invoices, get_shop_date, get_ticket,
+        verify_rent_due, request_payment_approval, list_payment_approvals</td></tr>
+    <tr><td>Inventory</td><td class="num">0</td><td class="num">0</td><td>— not involved, as planned</td></tr>
+    <tr><td>Customer Service</td><td class="num">0</td><td class="num">0</td><td>— not involved, as planned</td></tr>
+  </table>
+
+  <p class="why"><b>Against the plan.</b> Facilities first, Accounting second, Boss closing —
+  as predicted, and Inventory and Customer Service stayed out, also as predicted. The
+  escalation step the plan allowed for did not fire: Accounting judged the trade-off
+  comfortable enough to stage the payment without asking the Boss to rank the claims.</p>
+
+  <p class="why"><b>The verification found something the plan did not.</b> The plan assumed
+  the emailed “due in 2 days” would check out against the lease. On the second run, after the
+  payment had rolled <code>next_due</code> forward, Facilities reported the notice's implied
+  date no longer matched the lease:</p>
+
+  <div class="quote">“Lease 1 sets monthly rent at $2,400 with next due October 2, 2026 — not
+  September 2 as the notice implies. A $2,400 payment from checking is recorded paid on
+  August 31, 2026, and no amount remains due for that recorded obligation.”</div>
+
+  <p class="why"><b>The human gate held.</b> Accounting staged approval 1 and stopped; no
+  agent approved anything. The payment cleared only after an explicit authorization recorded
+  as <span class="mono">“Ludovica Di Mizio (owner, authorized in session)”</span> —
+  and that name, not an agent, is what the <code>payments</code> row carries.</p>
+
+  <p class="why"><b>And the payment did not close the ticket.</b> After the money moved the
+  ticket went back to <code>open</code>, not <code>resolved</code>. It took the second run,
+  where the Boss checked that nothing else remained, to reach <code>resolved</code>.</p>
+
+</section>
+
+<!-- ───────────────────────────── 103 ───────────────────────────── -->
+<section class="panel" id="p103" role="tabpanel" aria-labelledby="t103" hidden>
+  <div class="meta">
+    <h2>Ticket 103 — Bulk hoodie discount</h2>
+    <p class="req">price_override · Yale AI Club · raised 2026-08-31 16:55</p>
+    <ul class="facts">
+      <li><b>CC-HOOD-NAVY</b> size <b>M</b></li>
+      <li>qty <b>20</b></li>
+      <li class="warn"><b>8</b> on hand — 12 short</li>
+      <li>cost <b>$22</b> · list <b>$58</b></li>
+      <li>no invoice, nothing committed</li>
+    </ul>
+  </div>
+
+  <h3 class="section">Expected</h3>
+  <ol class="steps">
+    <li>
+      <div class="who">Boss <em>— receives the ticket</em></div>
+      <p class="why">The Boss calls <code>get_ticket(103)</code>. The ticket carries
+      <code>sku</code>, <code>size</code> and <code>qty = 20</code> but no
+      <code>invoice_id</code> and no <code>lease_id</code>, so nothing has been ordered or
+      committed yet. The resolved record brings back both the inventory row and the pricing
+      row — the two halves of the question — and the Boss sends it to Inventory first.</p>
+      <ul class="tools"><li>get_ticket</li><li>get_shop_date</li><li>ask_inventory</li></ul>
+    </li>
+    <li>
+      <div class="who">Inventory <em>— first delegation</em></div>
+      <p class="why">The ticket is labelled <code>price_override</code>, but supply is the
+      question that decides whether the price question is even live. Only 8 of the 20 are on
+      hand, so Inventory sizes the 12-unit gap and reads the vendor list: Bulldog Print Co is
+      the apparel reprinter, at 5 <code>lead_days</code>. Those 5 days are a stored lead
+      time, not a quote — nothing has been ordered, so the earliest arrival is an estimate
+      from the shop date, and should be given as one. Discounting goods the shop cannot
+      deliver would be the worse mistake of the two.</p>
+      <ul class="tools">
+        <li>check_item_availability</li><li>list_vendors</li><li>consult_colleague</li>
+      </ul>
+    </li>
+    <li>
+      <div class="who">Accounting <em>— second delegation</em></div>
+      <p class="why">Two questions, and they only make sense in this order. First, can the
+      shop fund the gap: at the $22 <code>unit_cost</code> on file, 12 units is about $264 —
+      an estimate, since that is what the shop recorded paying, not a price the vendor has
+      quoted for this order. It comes out of the same balance already carrying $2,400 of rent
+      and $840 unpaid. Second, what price holds: $22 against a $58 list is $36 of gross
+      margin a unit, so $22 is break-even and 62.1% off list is the floor. That is gross
+      margin only — the database records no labour, carriage or overhead — so a discount near
+      the floor is not as safe as the arithmetic alone suggests. Inventory is likely to ask
+      the funding half directly rather than route it back through the Boss.</p>
+      <ul class="tools">
+        <li>quote_bulk_order</li><li>get_cash_balance</li><li>list_unpaid_invoices</li>
+      </ul>
+    </li>
+    <li>
+      <div class="who">Customer Service <em>— last delegation</em></div>
+      <p class="why">Writes one reply covering both answers — the price the shop can hold
+      and what it can actually supply by when — rather than two half-answers. With $160
+      uncommitted against a $264 reorder, the financially realistic reply is the 8 in stock
+      at the agreed price now, with the remaining 12 offered once the shop has the cash,
+      rather than a promise of 20. Drafted for a human, never sent.</p>
+      <ul class="tools"><li>check_item_availability</li><li>draft_customer_message</li></ul>
+    </li>
+    <li>
+      <div class="who">Boss <em>— decides and closes</em></div>
+      <p class="why">Records the decision and why, citing the margin figures. Likely
+      <code>resolved</code>: nothing here needs a payment unless the shop chooses to order
+      the shortfall, which would make it <code>awaiting_approval</code> instead.</p>
+      <ul class="tools"><li>update_ticket_status</li></ul>
+    </li>
+  </ol>
+
+  <div class="notinvolved">
+    <b>Not involved:</b> Facilities. The lease has no bearing on a discount request.
+  </div>
+
+  <div class="assume">
+    <b>Assumptions, and what in the database supports them</b>
+    <ul>
+      <li><b>There is no "correct" discount to find.</b> <code>pricing</code> has exactly
+      three columns — <code>sku, unit_cost, list_price</code> — with no tier or volume
+      pricing, and no discount or promotion table exists. Ticket 103's note asks for "a bulk
+      discount" without naming a percentage. So any figure proposed is a recommendation
+      bounded by the $22 cost floor, not a published rate.</li>
+      <li><b>The vendor is chosen by reading, not by a link.</b> No table joins a sku to a
+      vendor; <code>vendors</code> holds only <code>name, specialty, lead_days</code>.
+      Bulldog Print Co is selected because its <code>specialty</code> is
+      "apparel reprint".</li>
+      <li><b>$264 is an estimate, and it is not small against the obligations.</b> The
+      figure uses <code>pricing.unit_cost</code> — what the shop recorded paying before, not
+      a quote for this order. Set against it: 20 units at the $58 list price would be $1,160
+      of revenue, but only if all 20 sell at list, and the $264 comes out of the same $3,400
+      that owes $3,240 to rent and invoice 501. On those numbers the gap is unaffordable
+      until something is paid down.</li>
+      <li><b>Nothing is reserved.</b> <code>inventory</code> has no reserved or allocated
+      column, only <code>qty</code>. The 8 on hand stay sellable to anyone until a decision
+      actually adjusts stock through <code>adjust_inventory</code>.</li>
+    </ul>
+  </div>
+
+  <h3 class="section">Actual</h3>
+  <div class="verdict">
+    <span class="tag resolved">resolved</span>
+    <span class="tag differ">Accounting went first, not Inventory</span>
+    <span class="tag match">no money moved</span>
+  </div>
+
+  <p class="why">One run, <span class="mono">run-7b6eb6ea</span>, 65 recorded steps — the
+  longest of the three.</p>
+
+  <div class="flow">
+    <b>Boss</b> → Accounting &nbsp;·&nbsp; <b>Boss</b> → Inventory &nbsp;·&nbsp;
+    Inventory → <b>Accounting</b> (peer, unprompted)<br>
+    <b>Boss</b> → Inventory again &nbsp;·&nbsp; <b>Boss</b> → Customer Service
+    &nbsp;·&nbsp; <b>Boss</b> resolves
+  </div>
+
+  <table class="t">
+    <tr><th>Agent</th><th>Tool calls</th><th>Handoffs</th><th>Tools actually used</th></tr>
+    <tr><td>Boss</td><td class="num">3</td><td class="num">4</td>
+        <td class="mono">get_ticket, get_shop_date, update_ticket_status</td></tr>
+    <tr><td>Accounting</td><td class="num">9</td><td class="num">0</td>
+        <td class="mono">get_ticket, quote_bulk_order, get_cash_balance, list_unpaid_invoices,
+        get_shop_date</td></tr>
+    <tr><td>Inventory</td><td class="num">9</td><td class="num">1</td>
+        <td class="mono">get_ticket, check_item_availability, get_shop_date,
+        list_unpaid_invoices, list_vendors</td></tr>
+    <tr><td>Customer Service</td><td class="num">5</td><td class="num">0</td>
+        <td class="mono">get_ticket, get_shop_date, check_item_availability, list_vendors,
+        draft_customer_message</td></tr>
+    <tr><td>Facilities</td><td class="num">0</td><td class="num">0</td><td>— not involved, as planned</td></tr>
+  </table>
+
+  <p class="why"><b>Where the plan was wrong.</b> The Problem 6 plan put Inventory first,
+  arguing supply decides whether the price question is live. The Boss went to
+  <b>Accounting first</b> — reading the ticket's <code>price_override</code> type as the
+  question being asked — then to Inventory. Both agents ran regardless, and Inventory used
+  the peer channel to take the funding question straight to Accounting, so the two halves met
+  anyway. The plan's reasoning held; its sequencing did not.</p>
+
+  <p class="why"><b>Outcome.</b> A 10% discount at <b>$52.20</b> a unit on 20 hoodies — well
+  above the $22 recorded cost, and far short of the 62.1% break-even floor, so the margin is
+  intact. The agents did not promise the full 20:</p>
+
+  <div class="quote">“Inventory has 8 on hand, leaving 12 short; Bulldog Print Co has a 5-day
+  listed lead time (2026-09-05 from shop date 2026-08-31), but no quote or confirmed
+  availability exists, so the draft does not promise the full quantity/date. No stock was
+  reserved and no order/reprint was placed pending customer confirmation and a vendor
+  quote.”</div>
+
+  <p class="why">Draft 2 was saved for Yale AI Club, <span class="mono">sent = 0</span>.
+  <b>No money moved</b> and no stock was adjusted, so the $264 reorder the plan anticipated
+  was never committed — which is the right call with $160 free.</p>
+
+</section>
+
+<!-- ───────────────────────────── Cash ───────────────────────────── -->
+<section class="panel" id="pcash" role="tabpanel" aria-labelledby="tcash" hidden>
+  <div class="meta">
+    <h2>Cash</h2>
+    <p class="req">Every movement of money across the three tickets, reconciled against
+    <code>cash_accounts</code> in the working database.</p>
+    <ul class="facts">
+      <li>start <b>$3,400.00</b></li>
+      <li>end <b>$1,000.00</b></li>
+      <li class="warn">net <b>−$2,400.00</b></li>
+      <li><b>1</b> payment, <b>1</b> human approval</li>
+    </ul>
+  </div>
+
+  <h3 class="section">Starting balance</h3>
+  <p class="why"><b>$3,400.00</b> in checking, read from <code>cash_accounts</code>
+  immediately after restoring <code>data/campus_customs_new.db</code> from the untouched
+  original. The <code>payments</code> table was empty and all three tickets were
+  <code>open</code>.</p>
+
+  <h3 class="section">Cash movements</h3>
+  <table class="t">
+    <tr><th>Date</th><th>Ticket</th><th>What</th><th>Authorized by</th><th>Amount</th></tr>
+    <tr>
+      <td>2026-08-31</td>
+      <td>#102</td>
+      <td>Rent — lease 1, Chapel Street shop<br>
+          <span class="mono" style="color:var(--muted)">approval 1 · payment 1</span></td>
+      <td>Ludovica Di Mizio (owner, authorized in session)</td>
+      <td class="num">−$2,400.00</td>
+    </tr>
+    <tr class="total"><td colspan="4">Net change</td>
+      <td class="num">−$2,400.00</td></tr>
+  </table>
+
+  <p class="why"><b>Why this one payment, and only this one.</b> Ticket 102's rent was the
+  only obligation the team staged for approval. Accounting verified $2,400 against lease 1,
+  confirmed the balance covered it, and requested approval — it could not pay. The money moved
+  only after an explicit human authorization, recorded in both
+  <code>approvals.decided_by</code> and <code>payments.approved_by</code>.</p>
+
+  <p class="why"><b>Tickets 101 and 103 cost nothing.</b> Ticket 101 was left
+  <code>blocked</code> with no payment requested: the $840 on invoice 501 is owed either way,
+  and the agents found nothing in the record that would turn paying it into a delivery date.
+  Ticket 103 resolved as a discount offer with no stock reserved and no reorder placed, so the
+  $264 the Problem 6 plan anticipated for the 12-unit shortfall was never committed.</p>
+
+  <h3 class="section">Ending balance, reconciled</h3>
+  <table class="t">
+    <tr><th>Line</th><th>Source</th><th>Amount</th></tr>
+    <tr><td>Starting balance</td><td class="mono">cash_accounts, after reset</td>
+        <td class="num">$3,400.00</td></tr>
+    <tr><td>Rent, ticket 102</td><td class="mono">payments.id = 1</td>
+        <td class="num">−$2,400.00</td></tr>
+    <tr class="total"><td>Computed ending balance</td><td></td>
+        <td class="num">$1,000.00</td></tr>
+    <tr class="total"><td>Ending balance in the database</td>
+        <td class="mono">SELECT balance FROM cash_accounts</td>
+        <td class="num">$1,000.00</td></tr>
+  </table>
+  <p class="why">$3,400.00 − $2,400.00 = <b>$1,000.00</b>, which is exactly what
+  <code>cash_accounts</code> holds. <b>The arithmetic matches the database.</b></p>
+
+  <h3 class="section">What the shop still owes</h3>
+  <table class="t">
+    <tr><th>Obligation</th><th>Due</th><th>Status</th><th>Amount</th></tr>
+    <tr><td>Invoice 501 — Bulldog Print Co reprint</td><td>2026-08-28</td>
+        <td style="color:var(--pink-soft)">overdue, unpaid</td><td class="num">$840.00</td></tr>
+    <tr><td>Rent — Chapel Street shop</td><td>2026-10-02</td>
+        <td style="color:var(--muted)">next period, not yet due</td><td class="num">$2,400.00</td></tr>
+  </table>
+  <p class="why">Against $1,000.00 on hand that leaves <b>$160.00 free</b> after what is
+  already due. The shop is solvent today and has not yet funded the October rent — a real
+  position worth seeing, and the reason the dashboard reports free cash by due date rather
+  than as one lump.</p>
+
+  <p class="why" style="color:var(--muted); font-size:13px">Cash never went negative at any
+  point. The original <code>data/campus_customs.db</code> still hashes
+  <code>f447ca6a…</code>, unchanged.</p>
+</section>
+
+<!-- ──────────────────────────── Reflection ──────────────────────── -->
+<section class="panel" id="prefl" role="tabpanel" aria-labelledby="trefl" hidden>
+  <div class="meta">
+    <h2>Reflection</h2>
+    <p class="req">Written after the runs, against the audit trail and the working database.
+    Every figure here is from the Actual tabs, the Cash tab or
+    <code>output/audit_trail.json</code>.</p>
+    <ul class="facts">
+      <li><b>5</b> runs</li>
+      <li><b>255,707</b> tokens</li>
+      <li><b>90</b> tool calls</li>
+      <li><b>2</b> resolved, <b>1</b> blocked</li>
+      <li class="warn"><b>$2,400</b> moved</li>
+    </ul>
+  </div>
+
+  <h3 class="section">How the agents actually performed</h3>
+
+  <p class="why"><b>Ticket 102 — the best of the three, and the only one I would trust
+  unsupervised.</b> Facilities checked the landlord's email against lease 1 instead of
+  believing it, Accounting sized the payment against a balance that already owed $840, staged
+  it, and stopped. Two runs, 73,562 tokens, one $2,400 payment. What convinced me was the
+  second run: Facilities noticed the lease's <code>next_due</code> was 2026-10-02 and said the
+  notice's implied 2026-09-02 "conflicts with the lease". It was reading the record, not the
+  request. And the same run caught something I had got wrong — that payment 1's timestamp sat
+  after the shop date, which it called "chronologically inconsistent". It was right;
+  <code>paid_at</code> was using the wall clock. An agent found a bug in my code.</p>
+
+  <p class="why"><b>Ticket 101 — correct, and I did not expect to be pleased by a failure.</b>
+  Twice, independently, the team refused to give Tauhid a delivery date. The temptation was
+  right there: invoice 501 names a 5-day lead time and 2026-08-31 + 5 = 2026-09-05 is an easy
+  sentence to write. Inventory wrote instead that 2026-09-05 "is only a nominal lead-time
+  estimate, not a confirmed ETA", and the draft told the customer plainly "we can't promise
+  fulfillment or give you a date yet". That is the single hardest thing to get out of a
+  language model and it did it without being asked twice. <b>Blocked was the right answer</b>,
+  and the Problem 6 plan had predicted it for the same reason.</p>
+
+  <p class="why"><b>Ticket 103 — resolved, and the one I am least comfortable with.</b> It
+  consumed <b>85,366 tokens across 67 steps and 32 tool calls</b> — a third of the entire
+  session — to produce a discount offer and one unsent draft. No money moved, no stock was
+  reserved, nothing was ordered. The $52.20 price is defensible ($22 cost, $58 list, well
+  inside the 62.1% floor) and the draft honestly refuses to promise all 20 units. But the
+  cost-to-consequence ratio is poor, and the ticket that spent the most did the least.</p>
+
+  <h3 class="section">Three things that went wrong, which the numbers show plainly</h3>
+
+  <p class="why"><b>1. Re-running ticket 101 produced a second draft to the same customer.</b>
+  <code>message_drafts</code> holds draft 1 "Your Bulldog tee order" and draft 3 "Update on
+  your Bulldog tee request", both to Tauhid Zaman, written in consecutive runs. No agent
+  checked whether a reply already existed. In a real shop a human reviewing that queue would
+  find two letters to one customer about one order. There is no tool to list existing drafts,
+  so Customer Service could not have known — that is my design gap, not the agent's mistake.</p>
+
+  <p class="why"><b>2. Invoice 501 is still <code>open</code> and nobody proposed paying it.</b>
+  Accounting called <code>list_unpaid_invoices</code> on ticket 101, saw the $840 sitting three
+  days overdue, reported the cash position, and never suggested clearing it. Every agent is scoped to
+  the ticket in front of it, and no ticket says "pay your overdue bills", so an obligation the
+  shop can see and afford sat untouched through five runs. Nobody on this team owns payables.</p>
+
+  <p class="why"><b>3. <code>adjust_inventory</code> was never called — not once.</b>
+  <code>inventory_adjustments</code> has zero rows. I built a guarded write tool, tested it
+  against oversell, documented it, and in the actual work it was dead weight. Both product
+  tickets ended with nothing reserved. That is defensible per ticket, but it means a whole
+  capability went unexercised and I would not claim it works in anger on this evidence.</p>
+
+  <h3 class="section">Actual vs Expected, ticket by ticket</h3>
+
+  <table class="t">
+    <tr><th>Ticket</th><th>Expected</th><th>Actual</th><th>Verdict</th></tr>
+    <tr>
+      <td><b>101</b></td>
+      <td>Boss → Inventory → Accounting (if funding needed) → Customer Service → Boss.
+          Outcome likely <code>blocked</code>, no date derivable.</td>
+      <td>Exactly that order, both runs. <code>blocked</code> twice.</td>
+      <td><span class="tag match">order right</span> <span class="tag match">outcome right</span></td>
+    </tr>
+    <tr>
+      <td><b>102</b></td>
+      <td>Boss → Facilities → Accounting → (escalation if tight) → human → Boss.
+          <code>awaiting_approval</code> then <code>resolved</code>.</td>
+      <td>That order. The escalation never fired — Accounting judged $160 of headroom
+          comfortable enough to decide alone.</td>
+      <td><span class="tag match">order right</span> <span class="tag differ">no escalation</span></td>
+    </tr>
+    <tr>
+      <td><b>103</b></td>
+      <td>Boss → <b>Inventory</b> → Accounting → Customer Service → Boss, because supply
+          decides whether price is live.</td>
+      <td>Boss went to <b>Accounting first</b>, reading the <code>price_override</code> type as
+          the question asked. Inventory then took funding to Accounting as a peer.</td>
+      <td><span class="tag differ">order wrong</span> <span class="tag match">outcome right</span></td>
+    </tr>
+  </table>
+
+  <p class="why"><b>Where my plan was wrong, and what that taught me.</b> On 103 I predicted
+  the sequence from first principles — do not price what you cannot supply — and the Boss
+  predicted it from the ticket's <code>type</code> field. The Boss was not being careless; it
+  was reading a signal I had under-weighted. The outcome was the same either way because
+  Inventory used the peer channel to take the funding question straight to Accounting, so the
+  two halves met regardless of which went first. <b>The sequencing mattered less than I
+  assumed, because the peer channel routes around a wrong first choice.</b></p>
+
+  <p class="why">I also predicted agents would stay out where they were not needed, and that
+  held exactly: Facilities made <b>zero</b> tool calls on 101 and 103; Inventory and Customer
+  Service made zero on 102. Nobody padded.</p>
+
+  <h3 class="section">What would be simpler with one agent and the same tools</h3>
+
+  <p class="why"><b>Most of it, honestly.</b> One agent holding all seventeen MCP tools would
+  have resolved 102 in a fraction of 73,562 tokens. The clearest evidence is duplicated work:
+  on ticket 102 <b>both Facilities and Accounting called <code>verify_rent_due</code></b> —
+  the same query, twice, because neither could see the other's result except through a summary
+  passed back to the Boss. Every delegation costs a model call to brief, a model call to
+  answer, and a summary that lossily re-states what a tool already returned exactly.</p>
+
+  <p class="why">A single agent also would not have hit the ceiling the team hit. At step 39 of
+  the 103 run, Accounting tried to consult Inventory and was refused — "inventory is already
+  working above you in this chain (boss → inventory → accounting), so consulting it would
+  loop." The guard behaved exactly as designed and Accounting answered with what it had. But
+  that whole class of problem simply does not exist with one agent: there is no chain, so
+  there is no cycle.</p>
+
+  <p class="why"><b>What the five-agent structure actually bought, which I would not give
+  up:</b></p>
+  <p class="why">First, <b>least privilege that is structural rather than instructed</b>.
+  Customer Service has no payment tool. It cannot be prompt-injected into spending money
+  because the capability is absent, not forbidden. A single agent holding all seventeen tools
+  has <code>request_payment_approval</code> available on every turn, including the turn where
+  it is drafting a reply to a customer who is pushing for a discount.</p>
+  <p class="why">Second, <b>the trail reads as a conversation</b>. "Facilities verified,
+  Accounting staged, you approved" is a sentence a shop owner can audit. One agent's trail is
+  a flat list of seventeen tool names and it is genuinely harder to see where a decision was
+  made.</p>
+  <p class="why">Third, and the one that surprised me: <b>separation produced disagreement</b>.
+  Inventory's refusal to promise a date on 101 survived because Customer Service had to write
+  from Inventory's report rather than from its own optimism. A single agent is its own only
+  reviewer.</p>
+
+  <p class="why"><b>My actual conclusion:</b> five agents is the wrong shape for three tickets
+  and the right shape for the rule that money needs a human. If I were building this for a
+  real shop I would collapse Inventory, Facilities and Customer Service into one operations
+  agent and keep <b>Accounting strictly separate</b> — the split that earns its cost is the
+  one around the money, not the one around the subject matter.</p>
+
+  <h3 class="section">Three problems this team could already solve</h3>
+
+  <p class="why"><b>1. "Which bills should I pay this week with what I have?"</b> Everything
+  needed exists: <code>get_cash_balance</code> now splits obligations into due-now and
+  upcoming with dates, <code>list_unpaid_invoices</code> flags overdue, and
+  <code>request_payment_approval</code> stages without paying. This is the gap invoice 501 fell
+  into — the capability is there, only a ticket type to trigger it is missing.</p>
+
+  <p class="why"><b>2. "Restock everything that is sold out."</b>
+  <code>check_item_availability</code> finds the zeroes (CC-TEE-WHITE size S and CC-MUG-CREST
+  are both at 0), <code>list_vendors</code> matches goods to a specialty, and
+  <code>adjust_inventory</code> records receipts. The 103 run already demonstrated the hard
+  part — Inventory sized a 12-unit gap and asked Accounting whether $264 was affordable,
+  unprompted.</p>
+
+  <p class="why"><b>3. "Check this invoice before I pay it."</b> Ticket 102 is this problem
+  already. Facilities compared a claim against a contract and found a date mismatch. Point the
+  same pattern at a vendor invoice — amount against the order, vendor against
+  <code>vendors</code>, due date against the shop date — and it works with no new tools.</p>
+
+  <h3 class="section">Three problems this team could not solve, and what each needs</h3>
+
+  <p class="why"><b>1. Finding out when the reprint actually arrives.</b> This is not
+  hypothetical — it is precisely why ticket 101 is blocked. The shop needs someone to ask
+  Bulldog Print Co "did you ship it, how many, and when does it land". Every agent here is
+  forbidden from contacting anyone, and <code>draft_customer_message</code> deliberately has no
+  send path. <b>Needs:</b> a <i>Vendor Liaison</i> agent with a genuine outbound channel and,
+  more importantly, somewhere to put the answer — the schema has no field for a confirmed ship
+  date or quantity, so even a phone call could not be recorded. That is a database change
+  before it is an agent.</p>
+
+  <p class="why"><b>2. "Is the Yale AI Club discount worth it?"</b> Accounting can prove
+  $52.20 clears the $22 cost. It cannot say whether a 10% discount to a student club wins
+  repeat business, or whether those hoodies would have sold at $58 anyway. <code>pricing</code>
+  holds exactly three columns and there is no orders, sales or customer-history table — no past
+  transactions exist to reason from. <b>Needs:</b> a sales history table and an <i>Analytics</i>
+  agent with aggregate query tools. Without the data, no agent can answer this, however clever.</p>
+
+  <p class="why"><b>3. Deciding which ticket gets the money.</b> This is the deepest gap and I
+  built it in myself. All three tickets competed for one $3,400 balance — the Problem 6 plan
+  said so explicitly — but every run is scoped to a single ticket, so 101, 102 and 103 were
+  each decided in isolation. Ticket 102 committed $2,400 without any agent weighing it against
+  what 101 or 103 might need. It happened to be the right call, which is luck, not design.
+  <b>Needs:</b> a <i>Triage</i> agent that opens the whole board with a cash budget, plus a
+  tool to earmark funds against a ticket so a reservation is visible to the next run. Neither
+  exists: <code>get_cash_balance</code> reports cash, it cannot hold any back.</p>
+
+  <h3 class="section">What I would change first</h3>
+
+  <p class="why">Not the agents — the tools. Three of my four complaints above are missing
+  tools, not bad reasoning: no way to see existing drafts, no way to earmark cash, no field for
+  a confirmed ship date. The agents were consistently more careful than I expected and
+  consistently limited by what I gave them to work with. The one genuinely
+  <i>agent</i>-level thing I would change is ownership: something on this team should hold
+  "the shop's obligations" as a standing responsibility, so an overdue invoice does not need a
+  ticket to be noticed.</p>
+
+  <p class="why" style="color:var(--muted); font-size:13px">Written against runs
+  <code>run-688afd3c</code>, <code>run-4ad8798b</code>, <code>run-7148ae7f</code>,
+  <code>run-e0373480</code> and <code>run-7b6eb6ea</code>. Cash $3,400.00 → $1,000.00,
+  reconciled against <code>cash_accounts</code>. Original database unchanged.</p>
+</section>
+
+<footer>
+  Campus Customs multi-agent operations · plans written before the run, from the ticket
+  records in <code>data/campus_customs_new.db</code>
+</footer>
+
+</div>
+
+<script>
+  const tabs = [...document.querySelectorAll('[role="tab"]')];
+  function show(tab){
+    tabs.forEach(t => {
+      const on = t === tab;
+      t.setAttribute('aria-selected', on);
+      document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+    });
+    tab.focus();
+  }
+  tabs.forEach((tab, i) => {
+    tab.addEventListener('click', () => show(tab));
+    tab.addEventListener('keydown', e => {
+      if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+      e.preventDefault();
+      show(tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length]);
+    });
+  });
+</script>
+</body>
+</html>

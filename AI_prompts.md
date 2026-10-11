@@ -381,3 +381,45 @@ _(none yet — updated as follow-ups arrive)_
 ### Follow-up prompt
 
 _(none yet — updated as follow-ups arrive)_
+
+### Follow-up prompt (Problem 11)
+
+> Compare my GitHub repository against the exact expected file layout for Problem 11
+>
+> Tell me if there are Identify:
+>
+> -	Required files that are missing
+> -	Extra files that are necessary for the app to work
+> -	Extra files that are unnecessary and safe to remove
+>
+> DO NOT delete anything, just check at this point and give me a concise list first
+>
+> Also check that there are no secrets
+>
+> And add this prompt in AI_prompts.md
+
+### Why the follow-up was needed
+
+The push in Problem 11 verified that every required file was present, but not the
+converse — whether anything in the repository was surplus. The assignment's expected
+layout was supplied as a screenshot that did not come through in the prompt, so the
+first pass checked against the structure the assignment text implies rather than against
+the picture itself. This follow-up asked for the audit in both directions, and
+explicitly asked for a list before any deletion.
+
+### Follow-up prompt (Problem 11, cont.)
+
+> Push the latest AI_prompts.md
+>
+> Remove personal file paths from output/mcp_smoke.json but still make it accessible
+>
+> Keep everything else unchanged
+
+### Why the follow-up was needed
+
+The layout audit turned up one non-secret but personal detail: `output/mcp_smoke.json`
+recorded the Problem 4 connection with absolute paths, so the home directory appeared
+three times in a public repository. The file is evidence and had to stay readable, so the
+fix was to rewrite the paths into the same relative form `.mcp.json` now uses rather than
+to remove or truncate the file. The instruction to keep everything else unchanged also
+settled the open question from the audit: the two test scripts and the Vite leftovers stay.

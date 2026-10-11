@@ -3,11 +3,12 @@
   "run_at": "2026-10-10T17:02:40-04:00",
   "mcp_server": "campus-customs-ops",
   "connection": {
-    "command": "/Users/Ludo/Desktop/SCHOOL/YALE/Y1/Fall 1/MGT 409 AI Foundation for Managers/Homework/HW5/.venv/bin/python",
+    "command": ".venv/bin/python",
     "args": [
-      "/Users/Ludo/Desktop/SCHOOL/YALE/Y1/Fall 1/MGT 409 AI Foundation for Managers/Homework/HW5/mcp_server/server.py"
+      "mcp_server/server.py"
     ],
-    "cwd": "/Users/Ludo/Desktop/SCHOOL/YALE/Y1/Fall 1/MGT 409 AI Foundation for Managers/Homework/HW5"
+    "cwd": ".",
+    "note": "Paths are relative to the HW5 project root, matching .mcp.json. The test ran with these resolved to absolute paths on the machine that recorded it; only the prefix was rewritten, no result was changed."
   },
   "database_under_test": "data/campus_customs_new.db",
   "transport": "stdio (subprocess launched exactly as .mcp.json specifies)",
